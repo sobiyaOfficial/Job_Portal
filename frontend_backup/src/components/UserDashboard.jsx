@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const UserDashboard = () => {
 
@@ -44,7 +44,7 @@ const UserDashboard = () => {
     checkLogin();
   }, []);
 
-  const fetchUserProfile = useCallback(async () => {
+  const fetchUserProfile = async () => {
     try {
       if (user) {
         const response = await fetch('http://localhost:5000/api/profile', {
@@ -59,7 +59,7 @@ const UserDashboard = () => {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
-  }, [user]);
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -152,7 +152,7 @@ const UserDashboard = () => {
     return () => {
       controller.abort();
     };
-  }, [user, fetchUserProfile]);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -384,15 +384,7 @@ const UserDashboard = () => {
                       <div className="p-6">
                         <h3 className="text-lg font-medium text-gray-900">{job.title}</h3>
                         <p className="text-sm text-gray-500">{job.company}</p>
-                        <p className="text-sm text-gray-500">{job.location}</p>
-                        <p className="text-sm text-gray-500">{job.salary}</p>
                         <p className="text-sm text-gray-500">Status: {job.status}</p>
-                        <Link
-                          to={`/job/${job.job_id || job.id}`}
-                          className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
-                        >
-                          View Details
-                        </Link>
                       </div>
                     </div>
                   ))}
@@ -413,10 +405,10 @@ const UserDashboard = () => {
                   {savedJobs.map(job => (
                     <div key={job.id} className="bg-white overflow-hidden shadow rounded-lg">
                       <div className="p-6">
-                        <h3 className="text-lg font-medium text-gray-900">{job.job_title}</h3>
+                        <h3 className="text-lg font-medium text-gray-900">{job.title}</h3>
                         <p className="text-sm text-gray-500">{job.company}</p>
                         <Link
-                          to={`/job/${job.job_id}`}
+                          to={`/job/${job.id}`}
                           className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
                         >
                           View Details

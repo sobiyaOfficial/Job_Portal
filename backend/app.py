@@ -332,8 +332,10 @@ def get_applications():
             result.append({
                 'id': app.id,
                 'job_id': app.job_id,
-                'job_title': job.title,
+                'title': job.title,
                 'company': job.company,
+                'location': job.location,
+                'salary': job.salary,
                 'status': app.status,
                 'applied_date': app.applied_date.isoformat()
             })
