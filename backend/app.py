@@ -18,6 +18,8 @@ app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on server filesystem
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False  # For localhost HTTP
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://postgres:1234@localhost:5433/hh"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -44,6 +46,28 @@ class Profile(db.Model):
     location = db.Column(db.String(100))
     experience = db.Column(db.String(200))
     skills = db.Column(db.JSON)
+    # Professional Information
+    degree = db.Column(db.String(100))
+    university = db.Column(db.String(100))
+    percentage = db.Column(db.String(10))
+    passout_year = db.Column(db.String(4))
+    backlog = db.Column(db.String(10))
+    # 12th Details
+    twelfth_school = db.Column(db.String(100))
+    twelfth_percentage = db.Column(db.String(10))
+    twelfth_passout_year = db.Column(db.String(4))
+    # 10th Details
+    tenth_school = db.Column(db.String(100))
+    tenth_percentage = db.Column(db.String(10))
+    tenth_passout_year = db.Column(db.String(4))
+    # Professional Details
+    internship = db.Column(db.Text)
+    experience_details = db.Column(db.Text)
+    project_description = db.Column(db.Text)
+    project_link = db.Column(db.String(500))
+    linkedin_link = db.Column(db.String(500))
+    github_link = db.Column(db.String(500))
+    resume_path = db.Column(db.String(500))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -153,6 +177,14 @@ def check_login():
         return jsonify({'message': 'Not logged in'}), 401
     except Exception as e:
         return jsonify({'message': 'Check login failed', 'error': str(e)}), 500
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    try:
+        session.clear()
+        return jsonify({'message': 'Logged out successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Logout failed', 'error': str(e)}), 500
 
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():
@@ -367,7 +399,29 @@ def get_profile():
             'phone': profile.phone,
             'location': profile.location,
             'experience': profile.experience,
-            'skills': profile.skills or []
+            'skills': profile.skills or [],
+            # Professional Information
+            'degree': profile.degree,
+            'university': profile.university,
+            'percentage': profile.percentage,
+            'passout_year': profile.passout_year,
+            'backlog': profile.backlog,
+            # 12th Details
+            'twelfth_school': profile.twelfth_school,
+            'twelfth_percentage': profile.twelfth_percentage,
+            'twelfth_passout_year': profile.twelfth_passout_year,
+            # 10th Details
+            'tenth_school': profile.tenth_school,
+            'tenth_percentage': profile.tenth_percentage,
+            'tenth_passout_year': profile.tenth_passout_year,
+            # Professional Details
+            'internship': profile.internship,
+            'experience_details': profile.experience_details,
+            'project_description': profile.project_description,
+            'project_link': profile.project_link,
+            'linkedin_link': profile.linkedin_link,
+            'github_link': profile.github_link,
+            'resume_path': profile.resume_path
         }), 200
     except Exception as e:
         return jsonify({'message': 'Failed to fetch profile', 'error': str(e)}), 500
@@ -375,32 +429,76 @@ def get_profile():
 @app.route('/api/profile', methods=['PUT'])
 def update_profile():
     try:
+        print("Starting profile update")
         # Check if user is logged in via session
         if 'user_id' not in session:
+            print("No user_id in session")
             return jsonify({'message': 'Authentication required'}), 401
 
         user = User.query.get(session['user_id'])
+        if not user:
+            print("User not found")
+            return jsonify({'message': 'User not found'}), 404
+
         data = request.get_json()
+        print(f"Received data: {data}")
 
         # Update user table fields
         user.name = data.get('name', user.name)
+        print(f"Updated name to: {user.name}")
+
+        # Update email if provided and different
+        if 'email' in data and data['email'] != user.email:
+            existing_user = User.query.filter_by(email=data['email']).first()
+            if existing_user:
+                print("Email already in use")
+                return jsonify({'message': 'Email already in use'}), 400
+            user.email = data['email']
+            session['user_email'] = user.email  # Update session
+            print(f"Updated email to: {user.email}")
 
         # Get or create profile for the user
         profile = Profile.query.filter_by(user_id=user.id).first()
         if not profile:
             profile = Profile(user_id=user.id)
             db.session.add(profile)
+            print("Created new profile")
 
         # Update profile fields
         profile.phone = data.get('phone', profile.phone)
         profile.location = data.get('location', profile.location)
         profile.experience = data.get('experience', profile.experience)
         profile.skills = data.get('skills', profile.skills)
+        # Professional Information
+        profile.degree = data.get('degree', profile.degree)
+        profile.university = data.get('university', profile.university)
+        profile.percentage = data.get('percentage', profile.percentage)
+        profile.passout_year = data.get('passout_year', profile.passout_year)
+        profile.backlog = data.get('backlog', profile.backlog)
+        # 12th Details
+        profile.twelfth_school = data.get('twelfth_school', profile.twelfth_school)
+        profile.twelfth_percentage = data.get('twelfth_percentage', profile.twelfth_percentage)
+        profile.twelfth_passout_year = data.get('twelfth_passout_year', profile.twelfth_passout_year)
+        # 10th Details
+        profile.tenth_school = data.get('tenth_school', profile.tenth_school)
+        profile.tenth_percentage = data.get('tenth_percentage', profile.tenth_percentage)
+        profile.tenth_passout_year = data.get('tenth_passout_year', profile.tenth_passout_year)
+        # Professional Details
+        profile.internship = data.get('internship', profile.internship)
+        profile.experience_details = data.get('experience_details', profile.experience_details)
+        profile.project_description = data.get('project_description', profile.project_description)
+        profile.project_link = data.get('project_link', profile.project_link)
+        profile.linkedin_link = data.get('linkedin_link', profile.linkedin_link)
+        profile.github_link = data.get('github_link', profile.github_link)
+        profile.resume_path = data.get('resume_path', profile.resume_path)
 
+        print("Committing changes")
         db.session.commit()
+        print("Profile updated successfully")
 
         return jsonify({'message': 'Profile updated successfully'}), 200
     except Exception as e:
+        print(f"Error updating profile: {str(e)}")
         db.session.rollback()
         return jsonify({'message': 'Failed to update profile', 'error': str(e)}), 400
 
@@ -451,6 +549,27 @@ def mark_notification_read(notification_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Failed to update notification', 'error': str(e)}), 400
+
+@app.route('/api/notifications/<int:notification_id>', methods=['DELETE'])
+def delete_notification(notification_id):
+    try:
+        # Check if user is logged in via session
+        if 'user_id' not in session:
+            return jsonify({'message': 'Authentication required'}), 401
+
+        user = User.query.get(session['user_id'])
+        notification = Notification.query.filter_by(id=notification_id, user_id=user.id).first()
+
+        if not notification:
+            return jsonify({'message': 'Notification not found'}), 404
+
+        db.session.delete(notification)
+        db.session.commit()
+
+        return jsonify({'message': 'Notification deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Failed to delete notification', 'error': str(e)}), 400
 
 @app.route('/api/admin/<int:admin_id>/notifications', methods=['GET'])
 def get_admin_notifications(admin_id):
@@ -510,7 +629,29 @@ def get_user_details(user_id):
             'phone': profile.phone,
             'location': profile.location,
             'experience': profile.experience,
-            'skills': profile.skills or []
+            'skills': profile.skills or [],
+            # Professional Information
+            'degree': profile.degree,
+            'university': profile.university,
+            'percentage': profile.percentage,
+            'passout_year': profile.passout_year,
+            'backlog': profile.backlog,
+            # 12th Details
+            'twelfth_school': profile.twelfth_school,
+            'twelfth_percentage': profile.twelfth_percentage,
+            'twelfth_passout_year': profile.twelfth_passout_year,
+            # 10th Details
+            'tenth_school': profile.tenth_school,
+            'tenth_percentage': profile.tenth_percentage,
+            'tenth_passout_year': profile.tenth_passout_year,
+            # Professional Details
+            'internship': profile.internship,
+            'experience_details': profile.experience_details,
+            'project_description': profile.project_description,
+            'project_link': profile.project_link,
+            'linkedin_link': profile.linkedin_link,
+            'github_link': profile.github_link,
+            'resume_path': profile.resume_path
         }), 200
     except Exception as e:
         return jsonify({'message': 'Failed to fetch user details', 'error': str(e)}), 500

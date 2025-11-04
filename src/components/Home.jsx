@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useNotifications } from '../contexts/NotificationContext';
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
+  const { addNotification } = useNotifications();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -20,7 +24,22 @@ const Home = () => {
       }
     };
 
+    const checkLogin = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/check', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          setCurrentUser(userData);
+        }
+      } catch (error) {
+        console.error('Error checking login:', error);
+      }
+    };
+
     fetchJobs();
+    checkLogin();
   }, []);
 
   const filteredJobs = jobs.filter(job =>
@@ -61,12 +80,30 @@ const Home = () => {
                   <p className="text-sm text-gray-500">{job.company}</p>
                   <p className="text-sm text-gray-500">{job.location}</p>
                   <p className="text-sm text-gray-500">{job.salary}</p>
-                  <Link
-                    to={`/job/${job.id}`}
-                    className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
-                  >
-                    View Details
-                  </Link>
+                  <div className="mt-4 flex space-x-2">
+                    {currentUser ? (
+                      <Link
+                        to="/signin"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
+                      >
+                        View Details
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/signup"
+                        onClick={() => {
+                          addNotification({
+                            type: 'info',
+                            message: 'Please login to view job details'
+                          });
+                        }}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-indigo-100 hover:bg-indigo-200"
+                      >
+                        View Details
+                      </Link>
+                    )}
+                    
+                  </div>
                 </div>
               </div>
             ))}

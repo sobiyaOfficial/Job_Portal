@@ -1,9 +1,104 @@
 import React, { useState, useEffect } from 'react';
 
+// User Details Modal Component
+const UserDetailsModal = ({ user, onClose }) => {
+  if (!user) return null;
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" onClick={onClose}>
+      <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white" onClick={(e) => e.stopPropagation()}>
+        <div className="mt-3">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-900">User Details</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {/* Basic Information */}
+            <div className="border-b pb-4">
+              <h4 className="text-md font-semibold text-gray-800 mb-2">Basic Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><strong>Name:</strong> {user.name || 'N/A'}</div>
+                <div><strong>Email:</strong> {user.email || 'N/A'}</div>
+                <div><strong>Phone:</strong> {user.phone || 'N/A'}</div>
+                <div><strong>Location:</strong> {user.location || 'N/A'}</div>
+                <div><strong>Experience:</strong> {user.experience || 'N/A'}</div>
+                <div><strong>Skills:</strong> {user.skills && user.skills.length > 0 ? user.skills.join(', ') : 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* Professional Information */}
+            <div className="border-b pb-4">
+              <h4 className="text-md font-semibold text-gray-800 mb-2">Professional Information</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><strong>Degree:</strong> {user.degree || 'N/A'}</div>
+                <div><strong>University:</strong> {user.university || 'N/A'}</div>
+                <div><strong>Percentage:</strong> {user.percentage || 'N/A'}</div>
+                <div><strong>Passout Year:</strong> {user.passout_year || 'N/A'}</div>
+                <div><strong>Backlog:</strong> {user.backlog || 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* 12th Details */}
+            <div className="border-b pb-4">
+              <h4 className="text-md font-semibold text-gray-800 mb-2">12th Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><strong>School:</strong> {user.twelfth_school || 'N/A'}</div>
+                <div><strong>Percentage:</strong> {user.twelfth_percentage || 'N/A'}</div>
+                <div><strong>Passout Year:</strong> {user.twelfth_passout_year || 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* 10th Details */}
+            <div className="border-b pb-4">
+              <h4 className="text-md font-semibold text-gray-800 mb-2">10th Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><strong>School:</strong> {user.tenth_school || 'N/A'}</div>
+                <div><strong>Percentage:</strong> {user.tenth_percentage || 'N/A'}</div>
+                <div><strong>Passout Year:</strong> {user.tenth_passout_year || 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* Professional Details */}
+            <div>
+              <h4 className="text-md font-semibold text-gray-800 mb-2">Professional Details</h4>
+              <div className="space-y-2">
+                <div><strong>Internship:</strong> {user.internship || 'N/A'}</div>
+                <div><strong>Experience Details:</strong> {user.experience_details || 'N/A'}</div>
+                <div><strong>Project Description:</strong> {user.project_description || 'N/A'}</div>
+                <div><strong>Project Link:</strong> {user.project_link ? <a href={user.project_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">{user.project_link}</a> : 'N/A'}</div>
+                <div><strong>LinkedIn:</strong> {user.linkedin_link ? <a href={user.linkedin_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">{user.linkedin_link}</a> : 'N/A'}</div>
+                <div><strong>GitHub:</strong> {user.github_link ? <a href={user.github_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">{user.github_link}</a> : 'N/A'}</div>
+                <div><strong>Resume:</strong> {user.resume_path ? <a href={user.resume_path} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">View Resume</a> : 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminDashboard = () => {
   const [jobs, setJobs] = useState([]);
   const [newJob, setNewJob] = useState({ title: '', company: '', location: '', salary: '', description: '', requirements: '', benefits: '' });
   const [notifications, setNotifications] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -163,7 +258,8 @@ const AdminDashboard = () => {
       });
       if (response.ok) {
         const userDetails = await response.json();
-        alert(`User Details:\nName: ${userDetails.name}\nEmail: ${userDetails.email}\nPhone: ${userDetails.phone}\nLocation: ${userDetails.location}\nExperience: ${userDetails.experience}\nSkills: ${userDetails.skills ? userDetails.skills.join(', ') : 'None'}`);
+        setSelectedUser(userDetails);
+        setShowModal(true);
       } else {
         console.error('Failed to fetch user details');
         alert('Failed to fetch user details');
@@ -171,6 +267,31 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching user details:', error);
       alert('Error fetching user details');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleDeleteNotification = async (notificationId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/notifications/${notificationId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        // Remove the notification from the local state
+        setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+        alert('Notification deleted successfully!');
+      } else {
+        console.error('Failed to delete notification');
+        alert('Failed to delete notification');
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      alert('Error deleting notification');
     }
   };
 
@@ -310,6 +431,12 @@ const AdminDashboard = () => {
                             Mark as Read
                           </button>
                         )}
+                        <button
+                          onClick={() => handleDeleteNotification(notification.id)}
+                          className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-600 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ml-2"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </li>
                   ))}
@@ -345,6 +472,9 @@ const AdminDashboard = () => {
           </div>
         </div>
       </main>
+
+      {/* User Details Modal */}
+      <UserDetailsModal user={selectedUser} onClose={handleCloseModal} />
     </div>
   );
 };

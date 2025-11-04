@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const UserDashboard = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
@@ -12,7 +14,29 @@ const UserDashboard = () => {
     phone: '',
     location: '',
     experience: '',
-    skills: []
+    skills: [],
+    // Professional Information
+    degree: '',
+    university: '',
+    percentage: '',
+    passout_year: '',
+    backlog: '',
+    // 12th Details
+    twelfth_school: '',
+    twelfth_percentage: '',
+    twelfth_passout_year: '',
+    // 10th Details
+    tenth_school: '',
+    tenth_percentage: '',
+    tenth_passout_year: '',
+    // Professional Details
+    internship: '',
+    experience_details: '',
+    project_description: '',
+    project_link: '',
+    linkedin_link: '',
+    github_link: '',
+    resume_path: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -21,10 +45,49 @@ const UserDashboard = () => {
     phone: '',
     location: '',
     experience: '',
-    skills: []
+    skills: [],
+    // Professional Information
+    degree: '',
+    university: '',
+    percentage: '',
+    passout_year: '',
+    backlog: '',
+    // 12th Details
+    twelfth_school: '',
+    twelfth_percentage: '',
+    twelfth_passout_year: '',
+    // 10th Details
+    tenth_school: '',
+    tenth_percentage: '',
+    tenth_passout_year: '',
+    // Professional Details
+    internship: '',
+    experience_details: '',
+    project_description: '',
+    project_link: '',
+    linkedin_link: '',
+    github_link: '',
+    resume_path: ''
   });
   const [activeTab, setActiveTab] = useState('personal');
   const [user, setUser] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        setUser(null);
+        navigate('/');
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
   // Check if user is logged in on component mount
   useEffect(() => {
@@ -72,7 +135,29 @@ const UserDashboard = () => {
         phone: '',
         location: '',
         experience: '',
-        skills: []
+        skills: [],
+        // Professional Information
+        degree: '',
+        university: '',
+        percentage: '',
+        passout_year: '',
+        backlog: '',
+        // 12th Details
+        twelfth_school: '',
+        twelfth_percentage: '',
+        twelfth_passout_year: '',
+        // 10th Details
+        tenth_school: '',
+        tenth_percentage: '',
+        tenth_passout_year: '',
+        // Professional Details
+        internship: '',
+        experience_details: '',
+        project_description: '',
+        project_link: '',
+        linkedin_link: '',
+        github_link: '',
+        resume_path: ''
       });
       setAppliedJobs([]);
       setSavedJobs([]);
@@ -82,7 +167,29 @@ const UserDashboard = () => {
         phone: '',
         location: '',
         experience: '',
-        skills: []
+        skills: [],
+        // Professional Information
+        degree: '',
+        university: '',
+        percentage: '',
+        passout_year: '',
+        backlog: '',
+        // 12th Details
+        twelfth_school: '',
+        twelfth_percentage: '',
+        twelfth_passout_year: '',
+        // 10th Details
+        tenth_school: '',
+        tenth_percentage: '',
+        tenth_passout_year: '',
+        // Professional Details
+        internship: '',
+        experience_details: '',
+        project_description: '',
+        project_link: '',
+        linkedin_link: '',
+        github_link: '',
+        resume_path: ''
       });
       setIsEditing(false);
     };
@@ -157,8 +264,14 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">User Dashboard</h1>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+          >
+            Logout
+          </button>
         </div>
       </header>
 
@@ -253,10 +366,11 @@ const UserDashboard = () => {
                       alert('Error updating profile: Network error');
                     }
                   }}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-8">
+                      {/* Personal Information */}
                       <div>
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
-                        <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700">Name</label>
                             <input
@@ -295,8 +409,134 @@ const UserDashboard = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* Educational Information */}
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Professional Information</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Educational Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Degree</label>
+                            <input
+                              type="text"
+                              value={editForm.degree}
+                              onChange={(e) => setEditForm({...editForm, degree: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="e.g., B.Tech"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">University</label>
+                            <input
+                              type="text"
+                              value={editForm.university}
+                              onChange={(e) => setEditForm({...editForm, university: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Percentage</label>
+                            <input
+                              type="text"
+                              value={editForm.percentage}
+                              onChange={(e) => setEditForm({...editForm, percentage: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="e.g., 85%"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Passout Year</label>
+                            <input
+                              type="number"
+                              value={editForm.passout_year}
+                              onChange={(e) => setEditForm({...editForm, passout_year: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="e.g., 2023"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Backlog</label>
+                            <input
+                              type="text"
+                              value={editForm.backlog}
+                              onChange={(e) => setEditForm({...editForm, backlog: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="e.g., 0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 12th Details */}
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">12th Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">School</label>
+                            <input
+                              type="text"
+                              value={editForm.twelfth_school}
+                              onChange={(e) => setEditForm({...editForm, twelfth_school: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Percentage</label>
+                            <input
+                              type="text"
+                              value={editForm.twelfth_percentage}
+                              onChange={(e) => setEditForm({...editForm, twelfth_percentage: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Passout Year</label>
+                            <input
+                              type="number"
+                              value={editForm.twelfth_passout_year}
+                              onChange={(e) => setEditForm({...editForm, twelfth_passout_year: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 10th Details */}
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">10th Details</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">School</label>
+                            <input
+                              type="text"
+                              value={editForm.tenth_school}
+                              onChange={(e) => setEditForm({...editForm, tenth_school: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Percentage</label>
+                            <input
+                              type="text"
+                              value={editForm.tenth_percentage}
+                              onChange={(e) => setEditForm({...editForm, tenth_percentage: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Passout Year</label>
+                            <input
+                              type="number"
+                              value={editForm.tenth_passout_year}
+                              onChange={(e) => setEditForm({...editForm, tenth_passout_year: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Professional Details */}
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Professional Details</h3>
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700">Experience</label>
@@ -316,6 +556,76 @@ const UserDashboard = () => {
                               onChange={(e) => setEditForm({...editForm, skills: e.target.value.split(',').map(s => s.trim())})}
                               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                               placeholder="e.g., JavaScript, React, Node.js"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Internship</label>
+                            <input
+                              type="text"
+                              value={editForm.internship}
+                              onChange={(e) => setEditForm({...editForm, internship: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="e.g., Software Engineer Intern at XYZ"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Experience Details</label>
+                            <textarea
+                              value={editForm.experience_details}
+                              onChange={(e) => setEditForm({...editForm, experience_details: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              rows="3"
+                              placeholder="Describe your work experience"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Project Description</label>
+                            <textarea
+                              value={editForm.project_description}
+                              onChange={(e) => setEditForm({...editForm, project_description: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              rows="3"
+                              placeholder="Describe your projects"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Project Link</label>
+                            <input
+                              type="url"
+                              value={editForm.project_link}
+                              onChange={(e) => setEditForm({...editForm, project_link: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="https://github.com/username/project"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">LinkedIn Link</label>
+                            <input
+                              type="url"
+                              value={editForm.linkedin_link}
+                              onChange={(e) => setEditForm({...editForm, linkedin_link: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="https://linkedin.com/in/username"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">GitHub Link</label>
+                            <input
+                              type="url"
+                              value={editForm.github_link}
+                              onChange={(e) => setEditForm({...editForm, github_link: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="https://github.com/username"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Resume Path</label>
+                            <input
+                              type="text"
+                              value={editForm.resume_path}
+                              onChange={(e) => setEditForm({...editForm, resume_path: e.target.value})}
+                              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="/path/to/resume.pdf"
                             />
                           </div>
                         </div>
