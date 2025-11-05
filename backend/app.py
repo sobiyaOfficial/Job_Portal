@@ -28,7 +28,7 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 Session(app)  # Initialize Flask-Session
-CORS(app, supports_credentials=True, origins=["http://localhost:3000", "https://job-portal-blond-six.vercel.app"])  # Enable credentials for session cookies
+CORS(app, supports_credentials=True, origins=["http://localhost:3000"])  # Enable credentials for session cookies
 
 # Models
 class User(db.Model):
