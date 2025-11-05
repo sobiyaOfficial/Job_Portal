@@ -98,7 +98,7 @@ const AdminDashboard = () => {
   const [newJob, setNewJob] = useState({ title: '', company: '', location: '', salary: '', description: '', requirements: '', benefits: '' });
   const [notifications, setNotifications] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
       if (response.ok) {
         const userDetails = await response.json();
         setSelectedUser(userDetails);
-        setShowModal(true);
+        // Modal functionality removed
       } else {
         console.error('Failed to fetch user details');
         alert('Failed to fetch user details');
@@ -271,7 +271,7 @@ const AdminDashboard = () => {
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    // Modal functionality removed
     setSelectedUser(null);
   };
 

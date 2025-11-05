@@ -10,16 +10,10 @@ import JobDetail from './components/JobDetail';
 import './App.css';
 
 function App() {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
   const [componentKey, setComponentKey] = useState(0);
 
   useEffect(() => {
     const handleLoginChange = () => {
-      const storedUser = localStorage.getItem('user');
-      setUser(storedUser ? JSON.parse(storedUser) : null);
       // Force component remount by changing key
       setComponentKey(prev => prev + 1);
     };

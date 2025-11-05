@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useNotifications } from '../contexts/NotificationContext';
 
 const JobDetail = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
-  const { addNotification } = useNotifications();
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {

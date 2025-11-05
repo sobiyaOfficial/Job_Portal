@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
 
   const [appliedJobs, setAppliedJobs] = useState([]);

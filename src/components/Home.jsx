@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
-  const navigate = useNavigate();
   const { addNotification } = useNotifications();
 
   useEffect(() => {
